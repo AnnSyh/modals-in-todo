@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { TodoForm } from '../components/TodoForm'
 import { TodoList } from '../components/TodoList'
 import { ITodo } from '../interfaces'
+
+import Modal from 'react-modal'
+
 
 declare var confirm: (question: string) => boolean
 
 export const TodosPage: React.FC = () => {
   const [todos, setTodos] = useState<ITodo[]>([])
+
+  const [showModal, setShowModal] = useState(false);
+  const [model, setModel] = useState([...todos]);
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('todos') || '[]') as ITodo[]
@@ -23,7 +29,6 @@ export const TodosPage: React.FC = () => {
       id: Date.now(),
       completed: false
     }
-    // setTodos([newTodo, ...todos])
     setTodos(prev => [newTodo, ...prev])
   }
 
@@ -45,15 +50,80 @@ export const TodosPage: React.FC = () => {
     }
   }
 
+
+
+
   return (
-    <React.Fragment>
+    <>
       <TodoForm onAdd={addHandler} />
 
-      <TodoList
+
+
+      {/* <TodoList
         todos={todos}
         onToggle={toggleHandler}
         onRemove={removeHandler}
-      />
-    </React.Fragment>
+      /> */}
+
+      <ul>
+        {todos.map((todo, index) => {
+          const classes = ['todo']
+          if (todo.completed) {
+            classes.push('completed')
+          }
+
+          return (
+
+            <div key={todo.id}>
+              <Modal
+                ariaHideApp={false}
+                isOpen={showModal}
+                onRequestClose={() => setShowModal(false)}
+              >
+                Вы уверены ?
+                <p>ID пункта todo =  {todo.id}</p>
+                <button onClick={() => {
+                  console.log('click Да');
+                  const newModel = [...todos];
+                  newModel.splice(index, 1);
+                  setTodos(newModel);
+                  console.log('setTodos = ', todos);
+                  setModel(newModel);
+                  console.log('setModel = ', setModel);
+                  setShowModal(false)
+
+                }}>Да</button>
+                <button onClick={() => setShowModal(false)}>Нет</button>
+              </Modal>
+
+
+              <li className={classes.join(' ')} >
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => toggleHandler(todo.id)}
+                  />
+                  <span>{todo.title}</span>
+                  <span>{todo.id}</span>
+                  <i
+                    className="material-icons red-text"
+                    onClick={(event) => {
+                      setShowModal(true)
+                      console.log('click trush open modal');
+                    }}
+                  >
+                    delete
+                  </i>
+                </label>
+              </li>
+            </div>
+
+
+          )
+        })}
+      </ul>
+
+    </>
   )
 }
