@@ -29,7 +29,7 @@ export const TodosPage: React.FC = () => {
       id: Date.now(),
       completed: false
     }
-    setTodos(prev => [newTodo, ...prev])
+    setTodos(prev => [...prev, newTodo])
   }
 
   const toggleHandler = (id: number) => {
@@ -67,6 +67,8 @@ export const TodosPage: React.FC = () => {
 
       <ul>
         {todos.map((todo, index) => {
+          console.log('todos.map index = ', index);
+          console.log('todos = ', todos);
           const classes = ['todo']
           if (todo.completed) {
             classes.push('completed')
@@ -82,14 +84,21 @@ export const TodosPage: React.FC = () => {
               >
                 Вы уверены ?
                 <p>ID пункта todo =  {todo.id}</p>
+                <p>index =  {index}</p>
                 <button onClick={() => {
                   console.log('click Да');
+                  // setTodos(prev => prev.filter(todo => todo.id === todos[index].id))
+
+                  // console.log('index = ', index);
+                  // console.log('todos[' + index + '].id = ', todos[index].id);
+                  // console.log(' todo.id = ', todo.id);
+                  // console.log(' todo = ', todo);
+
                   const newModel = [...todos];
                   newModel.splice(index, 1);
                   setTodos(newModel);
                   console.log('setTodos = ', todos);
-                  setModel(newModel);
-                  console.log('setModel = ', setModel);
+
                   setShowModal(false)
 
                 }}>Да</button>
